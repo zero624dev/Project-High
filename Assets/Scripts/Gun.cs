@@ -8,6 +8,8 @@ public class Gun : MonoBehaviour
     [SerializeField]
     private Transform bulletOffset;
     [SerializeField]
+    private Transform magazineOffset;
+    [SerializeField]
     private Transform catridgeOffset;
     [SerializeField]
     private int maxRounds = 25;
@@ -19,6 +21,8 @@ public class Gun : MonoBehaviour
     [Header("Objects")]
     [SerializeField]
     private GameObject catridge;
+    [SerializeField]
+    private GameObject magazine;
     [SerializeField]
     private GameObject bullet;
 
@@ -38,18 +42,28 @@ public class Gun : MonoBehaviour
     private Vector3 _recoilSpeed = Vector3.zero;
 
     private PlayerControl playerControl;
+    private Animator anim;
     public bool isReloading = false;
 
     void Start()
     {
         playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        anim = transform.GetComponent<Animator>();
         SetRoundsText();
     }
 
-    public IEnumerator Reload(int rounds)
+    public IEnumerator Reload(int rounds, bool flip)
     {
         if (currentRounds < maxRounds + 1)
         {
+            anim.SetTrigger("Reload");
+
+            SpriteRenderer magRenderer = Instantiate(magazine, magazineOffset.position, magazineOffset.rotation).GetComponent<SpriteRenderer>();
+            magRenderer.flipX = flip;
+            Destroy(magRenderer.gameObject, 2);
+            Physics2D.IgnoreLayerCollision(10, 9);
+            Physics2D.IgnoreLayerCollision(10, 10);
+
             isReloading = true;
             yield return new WaitForSeconds(reloadTime / 4);
             playerControl.roundsText.text = $"|   / {maxRounds}";

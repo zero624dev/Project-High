@@ -134,7 +134,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R) && !currentGun.isReloading)
         {
-            StartCoroutine(currentGun.Reload(25));
+            StartCoroutine(currentGun.Reload(25, mousePos.x > arm.transform.position.x));
         }
     }
 }
